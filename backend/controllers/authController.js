@@ -215,7 +215,7 @@ exports.forgotPassword = async (req, res) => {
       `;
 
       await transporter.sendMail({
-        from: '"GymBase API" <noreply@gymbase.local>',
+        from: `"GymBase API" <${process.env.email}>`,
         to: email,
         subject: 'Password Reset Request',
         text: `You requested a password reset. Please go to this link to reset your password: ${resetUrl}`,
