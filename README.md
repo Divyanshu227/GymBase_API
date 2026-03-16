@@ -104,11 +104,11 @@ GymBase_API/
 ```mermaid
 flowchart LR
       A[React Web Console] -->|JWT| B[/api/usage]
-      A -->|x-api-key or Bearer| C[/api/exercises/*]
+      A -->|x-api-key or Bearer| C["/api/exercises/*"]
       C --> D[Rate Limiter]
       B --> E[(MongoDB)]
       C --> E
-      F[/api/auth/*] --> E
+      F["/api/auth/*"] --> E
       F --> G[SMTP Provider]
 ```
 
