@@ -19,7 +19,6 @@ const Login = () => {
     try {
       const response = await axios.post(`${API_BASE}/api/auth/login`, { email, password });
       localStorage.setItem('token', response.data.token);
-      console.log(response.data);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Please try again.');
@@ -37,7 +36,7 @@ const Login = () => {
         </div>
 
         <h2 className="auth-title">Welcome Back</h2>
-        <p className="auth-subtitle">Sign in to your GymBase Developer Account</p>
+        <p className="auth-subtitle">Sign in to your GYMBASE_API Developer Account</p>
 
         {error && <div className="alert alert-error">{error}</div>}
 

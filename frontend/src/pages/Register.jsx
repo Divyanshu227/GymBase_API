@@ -37,7 +37,7 @@ const Register = () => {
         </div>
 
         <h2 className="auth-title">Create Account</h2>
-        <p className="auth-subtitle">Join the GymBase API Platform and start building.</p>
+        <p className="auth-subtitle">Join the GYMBASE_API Platform and start building.</p>
 
         {error   && <div className="alert alert-error">{error}</div>}
         {success && (

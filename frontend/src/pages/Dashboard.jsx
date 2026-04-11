@@ -2,22 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, Area, AreaChart
-} from 'recharts';
-import {
   Activity, LogOut, Database, Zap, Clock, Shield, Key, Copy, CheckCircle2,
-  Eye, EyeOff, X, Send, ChevronRight, RefreshCw, Terminal
+  Eye, EyeOff, X, Send, ChevronRight, RefreshCw, Terminal, Book, Home as HomeIcon,
+  CreditCard, Download, Calendar
 } from 'lucide-react';
 import API_BASE from '../api';
-
-
-
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Area, AreaChart
+} from 'recharts';
 const ENDPOINTS = [
-  { method: 'GET', path: '/api/exercises',              desc: 'List all exercises'           },
-  { method: 'GET', path: '/api/exercises/id/:id',       desc: 'Get exercise by ID'           },
-  { method: 'GET', path: '/api/exercises/name/:name',   desc: 'Search exercise by name'      },
-  { method: 'GET', path: '/api/exercises/muscle/:muscle', desc: 'Filter by muscle group'     },
+  { method: 'GET', path: '/api/exercises', desc: 'List all exercises' },
+  { method: 'GET', path: '/api/exercises/id/:id', desc: 'Get exercise by ID' },
+  { method: 'GET', path: '/api/exercises/name/:name', desc: 'Search exercise by name' },
+  { method: 'GET', path: '/api/exercises/muscle/:muscle', desc: 'Filter by muscle group' },
 ];
 
 const PlaygroundModal = ({ endpoint, apiKey, onClose }) => {
@@ -27,7 +25,7 @@ const PlaygroundModal = ({ endpoint, apiKey, onClose }) => {
   const [error, setError] = useState('');
 
   const needsParam = endpoint.path.includes(':');
-  const paramName  = needsParam ? endpoint.path.split(':')[1] : null;
+  const paramName = needsParam ? endpoint.path.split(':')[1] : null;
 
   const buildUrl = () => {
     if (needsParam && param) {
@@ -81,7 +79,7 @@ const PlaygroundModal = ({ endpoint, apiKey, onClose }) => {
               <div className="playground-label">{paramName}</div>
               <input
                 className="playground-input"
-                placeholder={`Enter ${paramName}…`}
+                placeholder={`Enter ${paramName}...`}
                 value={param}
                 onChange={(e) => setParam(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
@@ -100,7 +98,7 @@ const PlaygroundModal = ({ endpoint, apiKey, onClose }) => {
           {response !== null && (
             <div>
               <div className="playground-label" style={{ color: error ? 'var(--accent-red)' : 'var(--accent-green)' }}>
-                {error ? '⚠ Error Response' : '✓ Response'}
+                {error ? 'Error Response' : 'Response'}
               </div>
               <div className="playground-response" style={{ color: error ? '#fca5a5' : 'var(--accent-green)' }}>
                 {response}
@@ -120,7 +118,7 @@ const PlaygroundModal = ({ endpoint, apiKey, onClose }) => {
             disabled={loading || (needsParam && !param)}
           >
             {loading
-              ? <><RefreshCw size={15} className="spinner" /> Sending…</>
+              ? <><RefreshCw size={15} className="spinner" /> Sending...</>
               : <><Send size={15} /> Send Request</>}
           </button>
         </div>
@@ -130,13 +128,13 @@ const PlaygroundModal = ({ endpoint, apiKey, onClose }) => {
 };
 
 const Dashboard = () => {
-  const [data,         setData]        = useState(null);
-  const [loading,      setLoading]     = useState(true);
-  const [fetchError,   setFetchError]  = useState('');
-  const [copied,       setCopied]      = useState(false);
-  const [showKey,      setShowKey]     = useState(false);
-  const [activeTab,    setActiveTab]   = useState('overview');
-  const [playground,   setPlayground]  = useState(null);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [showKey, setShowKey] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [playground, setPlayground] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -167,8 +165,8 @@ const Dashboard = () => {
     fetchUsage();
   }, [navigate]);
 
-  const handleLogout  = () => { localStorage.removeItem('token'); navigate('/login'); };
-  const handleCopy    = () => {
+  const handleLogout = () => { localStorage.removeItem('token'); navigate('/login'); };
+  const handleCopy = () => {
     if (data?.api_key) {
       navigator.clipboard.writeText(data.api_key);
       setCopied(true);
@@ -185,7 +183,7 @@ const Dashboard = () => {
     return (
       <div className="loading-screen">
         <Activity size={44} color="var(--accent-blue)" className="spinner" />
-        <span className="loading-text">Loading your console…</span>
+        <span className="loading-text">Loading your console...</span>
       </div>
     );
   }
@@ -208,17 +206,19 @@ const Dashboard = () => {
     );
   }
 
-  const dailyPercent   = Math.min((data.daily.used   / data.daily.limit)   * 100, 100);
+  const dailyPercent = Math.min((data.daily.used / data.daily.limit) * 100, 100);
   const monthlyPercent = Math.min((data.monthly.used / data.monthly.limit) * 100, 100);
 
   const navItems = [
-    { id: 'overview',   icon: <Database size={18} />,  label: 'Overview'   },
-    { id: 'endpoints',  icon: <Zap size={18} />,       label: 'Endpoints'  },
-    { id: 'apikeys',    icon: <Shield size={18} />,    label: 'API Keys'   },
+    { id: 'overview', icon: <Database size={18} />, label: 'Overview' },
+    { id: 'endpoints', icon: <Zap size={18} />, label: 'Endpoints' },
+    { id: 'billing', icon: <CreditCard size={18} />, label: 'Billing' },
+    { id: 'apikeys', icon: <Shield size={18} />, label: 'API Keys' },
   ];
   const renderContent = () => {
     if (activeTab === 'overview') return <OverviewSection data={data} dailyPercent={dailyPercent} monthlyPercent={monthlyPercent} handleCopy={handleCopy} showKey={showKey} setShowKey={setShowKey} copied={copied} />;
     if (activeTab === 'endpoints') return <EndpointsSection apiKey={data.api_key} onTry={setPlayground} />;
+    if (activeTab === 'billing') return <BillingSection data={data} />;
     if (activeTab === 'apikeys') return <ApiKeysSection data={data} handleCopyKey={handleCopyKey} copied={copied} />;
   };
 
@@ -230,7 +230,7 @@ const Dashboard = () => {
             <div className="sidebar-logo-icon">
               <Activity size={20} color="var(--accent-blue)" />
             </div>
-            GymBase
+            GYMBASE_API
           </div>
 
           <div className="sidebar-section-label">Navigation</div>
@@ -251,6 +251,28 @@ const Dashboard = () => {
             ))}
           </ul>
 
+          <div className="sidebar-section-label">Resources</div>
+          <ul className="nav-menu">
+            <li className="nav-item">
+              <button className="nav-link" onClick={() => navigate('/')}>
+                <span className="nav-link-icon"><HomeIcon size={18} /></span>
+                Landing Page
+              </button>
+            </li>
+            <li className="nav-item">
+              <button className="nav-link" onClick={() => navigate('/docs')}>
+                <span className="nav-link-icon"><Book size={18} /></span>
+                Documentation
+              </button>
+            </li>
+            <li className="nav-item">
+              <button className="nav-link" onClick={() => navigate('/pricing')}>
+                <span className="nav-link-icon"><Zap size={18} /></span>
+                Billing & Plans
+              </button>
+            </li>
+          </ul>
+
           <div className="sidebar-footer">
             <button onClick={handleLogout} className="nav-link" style={{ width: '100%' }}>
               <span className="nav-link-icon"><LogOut size={18} /></span>
@@ -263,14 +285,14 @@ const Dashboard = () => {
           <div className="dashboard-header">
             <div>
               <div className="dashboard-title">
-                {activeTab === 'overview'  && 'Developer Console'}
+                {activeTab === 'overview' && 'Developer Console'}
                 {activeTab === 'endpoints' && 'API Endpoints'}
-                {activeTab === 'apikeys'   && 'API Keys'}
+                {activeTab === 'apikeys' && 'API Keys'}
               </div>
               <div className="dashboard-subtitle">
-                {activeTab === 'overview'  && 'Monitor your API usage and activity.'}
+                {activeTab === 'overview' && 'Monitor your API usage and activity.'}
                 {activeTab === 'endpoints' && 'Explore and test all available endpoints.'}
-                {activeTab === 'apikeys'   && 'Manage your API credentials.'}
+                {activeTab === 'apikeys' && 'Manage your API credentials.'}
               </div>
             </div>
             <div className="header-right">
@@ -322,7 +344,7 @@ const OverviewSection = ({ data, dailyPercent, monthlyPercent, handleCopy, showK
         </button>
       </div>
       <p className="api-key-hint">
-        Include this key as the <code>x-api-key</code> header. Treat it like a password — never expose it publicly.
+        Include this key as the <code>x-api-key</code> header. Treat it like a password and never expose it publicly.
       </p>
     </div>
 
@@ -377,8 +399,8 @@ const OverviewSection = ({ data, dailyPercent, monthlyPercent, handleCopy, showK
             <AreaChart data={data.history} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="var(--accent-blue)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="var(--accent-blue)" stopOpacity={0}   />
+                  <stop offset="5%" stopColor="var(--accent-blue)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--accent-blue)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -432,7 +454,7 @@ const EndpointsSection = ({ apiKey, onTry }) => (
             <span className="endpoint-path">{ep.path}</span>
             <span className="endpoint-desc">{ep.desc}</span>
             <button className="endpoint-try-btn" onClick={(e) => { e.stopPropagation(); onTry(ep); }}>
-              Try It →
+              Try It {'->'}
             </button>
           </div>
         ))}
@@ -450,11 +472,11 @@ const EndpointsSection = ({ apiKey, onTry }) => (
 
       <div className="playground-response" style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.8' }}>
         <span style={{ color: 'var(--accent-green)' }}># List all exercises</span>{'\n'}
-        curl -X GET https://your-domain/api/exercises \{'\n'}
+        curl -X GET {API_BASE}/api/exercises {'\\'}{'\n'}
         {'  '}<span style={{ color: 'var(--accent-blue)' }}>-H</span>{' "x-api-key: '}<span style={{ color: 'var(--accent-yellow)' }}>{apiKey ? `${apiKey.substring(0, 12)}...` : 'YOUR_API_KEY'}</span>{"\""}
         {'\n\n'}
         <span style={{ color: 'var(--accent-green)' }}># Get exercise by muscle group</span>{'\n'}
-        curl -X GET https://your-domain/api/exercises/muscle/chest \{'\n'}
+        curl -X GET {API_BASE}/api/exercises/muscle/abdominals {'\\'}{'\n'}
         {'  '}<span style={{ color: 'var(--accent-blue)' }}>-H</span>{' "x-api-key: '}<span style={{ color: 'var(--accent-yellow)' }}>{apiKey ? `${apiKey.substring(0, 12)}...` : 'YOUR_API_KEY'}</span>{"\""}
       </div>
     </div>
@@ -535,14 +557,118 @@ const ApiKeysSection = ({ data, handleCopyKey, copied }) => {
             'Never share your API key publicly or commit it to source control.',
             'Use environment variables (.env) to store your key in applications.',
             'Rotate your key if you suspect it has been compromised.',
-            'Your key is rate-limited: 50 calls/day and 500 calls/month.',
+            `Your current quota is ${data.daily.limit} calls/day and ${data.monthly.limit} calls/month.`,
           ].map((tip, i) => (
             <li key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', fontSize: '14px', color: 'var(--text-secondary)' }}>
-              <span style={{ color: 'var(--accent-green)', fontWeight: 700, marginTop: '1px' }}>✓</span>
+              <span style={{ color: 'var(--accent-green)', fontWeight: 700, marginTop: '1px' }}>[ok]</span>
               {tip}
             </li>
           ))}
         </ul>
+      </div>
+    </div>
+  );
+};
+
+const BillingSection = ({ data }) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+  };
+
+  return (
+    <div>
+      <div className="section-card">
+        <div className="section-card-header">
+          <div className="section-card-icon blue"><CreditCard size={18} /></div>
+          <div>
+            <div className="section-card-title">Subscription Overview</div>
+            <div className="section-card-desc">Manage your plan and billing information.</div>
+          </div>
+        </div>
+
+        <div className="subscription-info-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Current Plan</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px', fontWeight: 800, color: '#fff' }}>
+                  {data.plan.charAt(0).toUpperCase() + data.plan.slice(1)}
+                </span>
+                <span className={`sub-badge ${data.plan}`}>
+                  {data.plan === 'free' ? 'Standard' : 'Premium'}
+                </span>
+              </div>
+            </div>
+            {data.plan === 'free' ? (
+              <button 
+                onClick={() => window.location.href = '/pricing'}
+                className="btn btn-primary"
+              >
+                Upgrade Plan
+              </button>
+            ) : (
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '13px', color: 'var(--accent-green)', fontWeight: 600 }}>Active</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Renews automatically</div>
+              </div>
+            )}
+          </div>
+
+          <div className="sub-dates-grid">
+            <div className="sub-date-item">
+              <div className="sub-date-label">Start Date</div>
+              <div className="sub-date-value">
+                <Calendar size={14} style={{ display: 'inline', marginRight: '6px', opacity: 0.6 }} />
+                {formatDate(data.subscription_start_date)}
+              </div>
+            </div>
+            <div className="sub-date-item">
+              <div className="sub-date-label">End Date / Renewal</div>
+              <div className="sub-date-value">
+                <Clock size={14} style={{ display: 'inline', marginRight: '6px', opacity: 0.6 }} />
+                {formatDate(data.subscription_end_date)}
+              </div>
+            </div>
+          </div>
+
+          {data.last_payment_receipt_url && (
+            <div style={{ marginTop: '10px' }}>
+              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>Latest Billing</div>
+              <a 
+                href={data.last_payment_receipt_url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="receipt-btn"
+              >
+                <Download size={16} /> Download Latest Receipt
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="section-card">
+        <div className="section-card-header">
+          <div className="section-card-icon green"><Zap size={18} /></div>
+          <div>
+            <div className="section-card-title">Usage Limits</div>
+            <div className="section-card-desc">Your plan includes the following capacity.</div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div style={{ padding: '20px', background: '#010409', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>DAILY ALLOWANCE</div>
+            <div style={{ fontSize: '20px', fontWeight: 700 }}>{data.daily.limit === Infinity ? 'Unlimited' : `${data.daily.limit} Requests`}</div>
+          </div>
+          <div style={{ padding: '20px', background: '#010409', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>MONTHLY ALLOWANCE</div>
+            <div style={{ fontSize: '20px', fontWeight: 700 }}>{data.monthly.limit === Infinity ? 'Unlimited' : `${data.monthly.limit} Requests`}</div>
+          </div>
+        </div>
       </div>
     </div>
   );
