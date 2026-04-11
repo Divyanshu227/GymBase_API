@@ -4,8 +4,11 @@ const MonthlyUsage = require('../models/MonthlyUsage');
 const User = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const DAILY_LIMIT = 50;
-const MONTHLY_LIMIT = 500;
+const PLAN_LIMITS = {
+  free: { daily: 50, monthly: 500 },
+  pro: { daily: 500, monthly: 5000 },
+  business: { daily: Infinity, monthly: Infinity }
+};
 
 const getFormattedDate = (date) => {
   return date.toISOString().split('T')[0];
@@ -18,50 +21,62 @@ const getFormattedMonth = (date) => {
 const apiLimiterMiddleware = async (req, res, next) => {
   const apiKey = req.header('x-api-key');
   const authHeader = req.header('Authorization');
-  let userId;
+  let user;
 
   try {
     if (apiKey) {
-      const user = await User.findOne({ api_key: apiKey });
+      user = await User.findOne({ api_key: apiKey });
       if (!user) {
         return res.status(401).json({ error: 'Invalid API Key' });
       }
       if (!user.is_verified) {
         return res.status(403).json({ error: 'Please verify your email to use the API' });
       }
-      userId = user.id;
-      req.user = { id: userId, isApiKey: true };
+      req.user = { id: user.id, isApiKey: true };
     } else if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       const decoded = jwt.verify(token, JWT_SECRET);
-      userId = decoded.id;
+      user = await User.findOne({ id: decoded.id });
+      if (!user) return res.status(401).json({ error: 'User not found' });
       req.user = decoded; 
     } else {
       return res.status(401).json({ error: 'Missing authentication. Provide x-api-key header or Bearer token' });
     }
+
+    const plan = user.plan || 'free';
+    const dailyLimit = user.custom_daily_limit || PLAN_LIMITS[plan].daily;
+    const monthlyLimit = user.custom_monthly_limit || PLAN_LIMITS[plan].monthly;
 
     const now = new Date();
     const currentDate = getFormattedDate(now);
     const currentMonth = getFormattedMonth(now);
 
     const dailyUsage = await DailyUsage.findOneAndUpdate(
-      { user_id: userId, date: currentDate },
+      { user_id: user.id, date: currentDate },
       { $inc: { count: 1 } },
       { upsert: true, new: true }
     );
 
-    if (dailyUsage.count > DAILY_LIMIT) {
-      return res.status(429).json({ error: 'Daily API limit exceeded (50 calls per day)' });
+    if (dailyLimit !== Infinity && dailyUsage.count > dailyLimit) {
+      return res.status(429).json({ 
+        error: `Daily API limit exceeded. Current plan: ${plan}. Limit: ${dailyLimit} calls/day`,
+        plan: plan,
+        limit: dailyLimit
+      });
     }
 
     const monthlyUsage = await MonthlyUsage.findOneAndUpdate(
-      { user_id: userId, month: currentMonth },
+      { user_id: user.id, month: currentMonth },
       { $inc: { count: 1 } },
       { upsert: true, new: true }
     );
 
-    if (monthlyUsage.count > MONTHLY_LIMIT) {
-      return res.status(429).json({ error: 'Monthly API limit exceeded (500 calls per month)' });
+    if (monthlyLimit !== Infinity && monthlyUsage.count > monthlyLimit) {
+      return res.status(429).json({ 
+        error: `Monthly API limit exceeded. Current plan: ${plan}. Limit: ${monthlyLimit} calls/month`,
+        plan: plan,
+        limit: monthlyLimit
+      });
     }
 
     next();

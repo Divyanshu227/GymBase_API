@@ -34,6 +34,26 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     sparse: true
   },
+  plan: {
+    type: String,
+    enum: ['free', 'pro', 'business'],
+    default: 'free'
+  },
+  custom_daily_limit: {
+    type: Number
+  },
+  custom_monthly_limit: {
+    type: Number
+  },
+  subscription_start_date: {
+    type: Date
+  },
+  subscription_end_date: {
+    type: Date
+  },
+  last_payment_receipt_url: {
+    type: String
+  },
   created_at: {
     type: Date,
     default: Date.now
