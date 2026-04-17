@@ -42,10 +42,11 @@ const Login = () => {
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label" htmlFor='email'>Email Address</label>
             <div className="input-wrapper">
               <span className="input-icon"><Mail size={17} /></span>
               <input
+                id='email'
                 type="email"
                 className="form-input"
                 placeholder="developer@example.com"
@@ -58,12 +59,13 @@ const Login = () => {
 
           <div className="form-group">
             <div className="form-label-row">
-              <label className="form-label">Password</label>
+              <label className="form-label" htmlFor='password'>Password</label>
               <Link to="/forgot-password" className="forgot-link">Forgot Password?</Link>
             </div>
             <div className="input-wrapper">
               <span className="input-icon"><Lock size={17} /></span>
               <input
+                id='password'
                 type="password"
                 className="form-input"
                 placeholder="••••••••"

@@ -48,10 +48,11 @@ const Register = () => {
 
         <form onSubmit={handleRegister}>
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label" htmlFor='email'>Email Address</label>
             <div className="input-wrapper">
               <span className="input-icon"><Mail size={17} /></span>
               <input
+                id='email'
                 type="email"
                 className="form-input"
                 placeholder="developer@example.com"
@@ -63,10 +64,11 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <label className="form-label" htmlFor='password'>Password</label>
             <div className="input-wrapper">
               <span className="input-icon"><Lock size={17} /></span>
               <input
+                id='password'
                 type="password"
                 className="form-input"
                 placeholder="Create a strong password"
