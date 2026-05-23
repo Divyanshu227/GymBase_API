@@ -78,6 +78,10 @@ if (NODE_ENV === 'production') {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`[GymBase_API] Server running on port ${PORT} (${NODE_ENV})`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[GymBase_API] Server running on port ${PORT} (${NODE_ENV})`);
+  });
+}
+
+module.exports = app;
