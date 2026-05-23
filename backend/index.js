@@ -22,19 +22,17 @@ const parseOrigins = (value = '') =>
     .map((origin) => origin.trim().replace(/\/$/, ''))
     .filter(Boolean);
 
+const devOrigins = NODE_ENV === 'production' ? [] : ['http://localhost:5173'];
 const allowedOrigins = [
   ...parseOrigins(process.env.CORS_ORIGINS),
   ...parseOrigins(process.env.FRONTEND_URL),
-  'http://localhost:5173',
+  ...devOrigins,
 ];
 
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
   const normalizedOrigin = origin.replace(/\/$/, '');
-  return (
-    allowedOrigins.includes(normalizedOrigin) ||
-    /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(normalizedOrigin)
-  );
+  return allowedOrigins.includes(normalizedOrigin);
 };
 
 const corsOptions = {
