@@ -16,7 +16,12 @@ const exerciseRoutes = require('./routes/exerciseRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const paymentController = require('./controllers/paymentController');
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 // Stripe webhooks require the raw request body for signature verification.
 app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
 app.use(express.json());
