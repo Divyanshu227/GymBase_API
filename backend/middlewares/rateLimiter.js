@@ -3,7 +3,7 @@ const DailyUsage = require('../models/DailyUsage');
 const MonthlyUsage = require('../models/MonthlyUsage');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey';
 const PLAN_LIMITS = {
   free: { daily: 50, monthly: 500 },
   pro: { daily: 500, monthly: 5000 },
