@@ -21,6 +21,7 @@ const Register = () => {
       setSuccess(true);
       setLoading(false);
     } catch (err) {
+      console.log('Registration error:', err);
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
       setSuccess(false);
       setLoading(false);
