@@ -135,8 +135,14 @@ app.get('/favicon.png', (req, res) => {
   res.status(204).end();
 });
 
-app.use('/api', (req, res, next) => {
+app.use('/api', async (req, res, next) => {
   if (isDbReady()) {
+    next();
+    return;
+  }
+
+  const connected = await initDb();
+  if (connected || isDbReady()) {
     next();
     return;
   }
