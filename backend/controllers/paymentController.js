@@ -1,5 +1,6 @@
 const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
 const User = require('../models/User');
+const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 const PLANS = {
   pro: {
@@ -39,6 +40,10 @@ exports.createCheckoutSession = async (req, res) => {
       return res.status(400).json({ error: 'Invalid plan selected' });
     }
 
+    if (!FRONTEND_URL) {
+      return res.status(500).json({ error: 'FRONTEND_URL is not configured on the server' });
+    }
+
     const user = await User.findOne({ id: userId });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -63,8 +68,8 @@ exports.createCheckoutSession = async (req, res) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&plan=${planId}`,
-      cancel_url: `${process.env.FRONTEND_URL}/payment-failure?plan=${planId}`,
+      success_url: `${FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&plan=${planId}`,
+      cancel_url: `${FRONTEND_URL}/payment-failure?plan=${planId}`,
       customer_email: user.email,
       metadata: {
         userId: user.id,
