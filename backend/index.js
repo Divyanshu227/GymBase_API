@@ -24,6 +24,10 @@ app.use(express.urlencoded({ extended: true }));
 
 initDb();
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', authRoutes);
 app.use('/api/usage', usageRoutes);
@@ -33,7 +37,7 @@ app.use('/api/payment', paymentRoutes);
 if (NODE_ENV === 'production') {
   const frontendBuild = path.join(__dirname, '..', 'frontend', 'dist');
   app.use(express.static(frontendBuild));
-  app.get('*', (req, res) => {
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(frontendBuild, 'index.html'));
   });
 }
