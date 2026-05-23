@@ -230,12 +230,32 @@ Returns:
 ## Build and Production Notes
 
 - `backend/index.js` serves frontend build assets when `NODE_ENV=production`
+- `GET /api/health` is available for platform health checks
 - build frontend using:
 
 ```bash
 cd backend
 npm run build:frontend
 ```
+
+### Render deployment
+
+This repository includes `render.yaml` for a single Render web service. Render installs backend dependencies, builds the Vite frontend, and starts the Express server, which serves both `/api/*` routes and the frontend build in production.
+
+Required Render environment variables:
+
+- `NODE_ENV=production`
+- `MONGO_URI`
+- `JWT_SECRET`
+- `FRONTEND_URL`
+- `BASE_URL`
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `email`
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+- `VITE_STRIPE_PUBLISHABLE_KEY`
+
+### CI
+
+GitHub Actions runs on pushes and pull requests. The workflow installs dependencies from lockfiles, checks the backend entry point, lints the frontend, and builds the frontend bundle.
 
 ## Troubleshooting
 
