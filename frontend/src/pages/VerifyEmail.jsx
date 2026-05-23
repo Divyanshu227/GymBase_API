@@ -6,11 +6,13 @@ import API_BASE from '../api';
 
 const VerifyEmail = () => {
   const { token } = useParams();
-  const [status,  setStatus]  = useState('loading');
-  const [message, setMessage] = useState('');
+  const [status,  setStatus]  = useState(token ? 'loading' : 'error');
+  const [message, setMessage] = useState(token ? '' : 'No verification token provided.');
   const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (!token) return;
+
     const verifyEmail = async () => {
       try {
         const response = await axios.get(`${API_BASE}/api/auth/verify-email/${token}`);
@@ -22,14 +24,9 @@ const VerifyEmail = () => {
       }
     };
 
-    if (token) {
-      if (!hasFetched.current) {
-        hasFetched.current = true;
-        verifyEmail();
-      }
-    } else {
-      setStatus('error');
-      setMessage('No verification token provided.');
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      verifyEmail();
     }
   }, [token]);
 
