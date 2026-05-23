@@ -44,9 +44,13 @@ CORS_ORIGINS=https://gym-base-api.vercel.app
 Set this variable in the deployed frontend:
 
 ```env
-VITE_API_URL=https://your-backend-domain.vercel.app
+VITE_API_URL=https://gym-base-api-blfo.vercel.app
 ```
 
 Important: use the final backend domain that does not redirect. Do not include a trailing slash.
 
 After changing Vercel environment variables, redeploy both projects so the new values are included in the build/runtime.
+
+## Why Local `.env` Was Not Enough
+
+Editing `backend/.env` only affects a locally running backend. Vercel does not read that file from the repository during production runtime. Add the same `FRONTEND_URL` and `CORS_ORIGINS` values in the Vercel dashboard for the backend project, then redeploy.
