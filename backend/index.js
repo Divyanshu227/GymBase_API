@@ -113,6 +113,20 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+app.get('/api/diagnostics', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    nodeEnv: NODE_ENV,
+    vercel: !!process.env.VERCEL,
+    hasMongoUri: !!MONGO_URI,
+    mongoUriSource: process.env.MONGO_URI ? 'MONGO_URI' : process.env.MONGODB_URI ? 'MONGODB_URI' : 'missing',
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    hasFrontendUrl: !!process.env.FRONTEND_URL,
+    corsOrigins: allowedOrigins,
+    dbReady: typeof isDbReady === 'function' ? isDbReady() : false,
+  });
+});
+
 app.get('/favicon.ico', (req, res) => {
   res.status(204).end();
 });
