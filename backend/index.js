@@ -105,8 +105,20 @@ app.use(express.urlencoded({ extended: true }));
 
 initDb();
 
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'healthy', message: 'GymBase API is running' });
+});
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
+});
+
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
+app.get('/favicon.png', (req, res) => {
+  res.status(204).end();
 });
 
 app.use('/api', (req, res, next) => {
