@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
+    "build": "npm run check",
     "check": "node --check index.js",
-    "build:frontend": "npm --prefix ../frontend ci && npm --prefix ../frontend run build",
-    "build:all": "npm run build:frontend",
+    "build:all": "npm run build",
     "test": "npm run check"
   },
   "keywords": [],
