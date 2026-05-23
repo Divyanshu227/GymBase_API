@@ -22,12 +22,12 @@ Before sending `POST /api/auth/login` or `POST /api/auth/register`, the browser 
 
 That preflight must receive a direct `2xx` response with CORS headers. It cannot follow redirects. If the configured API URL redirects to a different Vercel alias, adds or removes a slash, or points at the wrong deployment, the browser blocks the real login/register request.
 
-The backend was also configured with a single exact CORS origin, so Vercel preview URLs or alternate production aliases could be rejected.
+The backend was also configured with a single exact CORS origin, so the deployed frontend origin must be listed explicitly.
 
 ## Fix Applied
 
 - `backend/index.js` now supports `CORS_ORIGINS`, a comma-separated allowlist.
-- `backend/index.js` allows Vercel deployment origins matching `https://*.vercel.app`.
+- `backend/index.js` only allows explicitly configured origins in production.
 - `backend/index.js` explicitly supports common preflight methods and headers.
 - `frontend/src/api.js` removes a trailing slash from `VITE_API_URL` to avoid accidental redirect-prone URLs.
 - `.env.example` files now document the deployment variables.
