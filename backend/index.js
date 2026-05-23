@@ -39,13 +39,13 @@ try {
   isDbReady = () => false;
   MONGO_URI = null;
   authRoutes = express.Router();
-  authRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  authRoutes.all(/.*/, (req, res) => res.status(500).json({ error: 'Server startup error' }));
   usageRoutes = express.Router();
-  usageRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  usageRoutes.all(/.*/, (req, res) => res.status(500).json({ error: 'Server startup error' }));
   exerciseRoutes = express.Router();
-  exerciseRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  exerciseRoutes.all(/.*/, (req, res) => res.status(500).json({ error: 'Server startup error' }));
   paymentRoutes = express.Router();
-  paymentRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  paymentRoutes.all(/.*/, (req, res) => res.status(500).json({ error: 'Server startup error' }));
   paymentController = {
     handleWebhook: (req, res) => res.status(500).send('Server startup error'),
   };
