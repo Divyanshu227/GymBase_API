@@ -10,12 +10,46 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-const { initDb, isDbReady, MONGO_URI } = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
-const usageRoutes = require('./routes/usageRoutes');
-const exerciseRoutes = require('./routes/exerciseRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-const paymentController = require('./controllers/paymentController');
+// Global safety: catch unexpected rejections and exceptions to avoid Vercel function crashes
+process.on('uncaughtException', (err) => {
+  console.error('[GymBase_API] Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[GymBase_API] Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+let initDb, isDbReady, MONGO_URI;
+let authRoutes, usageRoutes, exerciseRoutes, paymentRoutes, paymentController;
+try {
+  const dbModule = require('./config/db');
+  initDb = dbModule.initDb;
+  isDbReady = dbModule.isDbReady;
+  MONGO_URI = dbModule.MONGO_URI;
+
+  authRoutes = require('./routes/authRoutes');
+  usageRoutes = require('./routes/usageRoutes');
+  exerciseRoutes = require('./routes/exerciseRoutes');
+  paymentRoutes = require('./routes/paymentRoutes');
+  paymentController = require('./controllers/paymentController');
+} catch (err) {
+  console.error('[GymBase_API] Failed to load modules at startup:', err);
+  // Fallback: define minimal handlers so the function responds instead of crashing
+  initDb = async () => false;
+  isDbReady = () => false;
+  MONGO_URI = null;
+  authRoutes = express.Router();
+  authRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  usageRoutes = express.Router();
+  usageRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  exerciseRoutes = express.Router();
+  exerciseRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  paymentRoutes = express.Router();
+  paymentRoutes.all('*', (req, res) => res.status(500).json({ error: 'Server startup error' }));
+  paymentController = {
+    handleWebhook: (req, res) => res.status(500).send('Server startup error'),
+  };
+}
 
 const parseOrigins = (value = '') =>
   value
