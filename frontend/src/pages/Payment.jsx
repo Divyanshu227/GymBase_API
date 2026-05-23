@@ -10,7 +10,8 @@ import axios from 'axios';
 import { ArrowLeft, ShieldCheck, Lock, CreditCard, Loader2 } from 'lucide-react';
 import API_BASE from '../api';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
+const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 const CheckoutForm = ({ planId, planName, price }) => {
   const stripe = useStripe();
@@ -108,13 +109,19 @@ const PaymentPage = () => {
         <h2 className="auth-title">Complete Payment</h2>
         <p className="auth-subtitle">Finalize your upgrade to {currentPlan.name}</p>
 
-        <Elements stripe={stripePromise}>
-          <CheckoutForm 
-            planId={planId} 
-            planName={currentPlan.name} 
-            price={currentPlan.price} 
-          />
-        </Elements>
+        {!stripePromise ? (
+          <div className="alert alert-error">
+            Stripe is not configured. Add VITE_STRIPE_PUBLISHABLE_KEY and redeploy the frontend.
+          </div>
+        ) : (
+          <Elements stripe={stripePromise}>
+            <CheckoutForm
+              planId={planId}
+              planName={currentPlan.name}
+              price={currentPlan.price}
+            />
+          </Elements>
+        )}
 
         <div className="payment-trust-badges">
           <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" height="20" />
