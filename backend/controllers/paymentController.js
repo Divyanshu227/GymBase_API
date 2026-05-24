@@ -33,7 +33,8 @@ exports.createCheckoutSession = async (req, res) => {
     const userId = req.user.id;
 
     if (!stripe) {
-      return res.status(500).json({ error: 'Stripe is not configured on the server. Please add STRIPE_SECRET_KEY to .env' });
+      console.error('[GymBase_API] Stripe not configured: STRIPE_SECRET_KEY is missing');
+      return res.status(500).json({ error: 'Stripe is not configured on the server. Add STRIPE_SECRET_KEY to backend/.env for local dev or set STRIPE_SECRET_KEY in your deployment environment variables.' });
     }
 
     if (!PLANS[planId]) {
@@ -90,7 +91,8 @@ exports.confirmPayment = async (req, res) => {
     const userId = req.user.id;
 
     if (!stripe) {
-      return res.status(500).json({ error: 'Stripe is not configured' });
+      console.error('[GymBase_API] Stripe not configured: STRIPE_SECRET_KEY is missing');
+      return res.status(500).json({ error: 'Stripe is not configured on the server. Add STRIPE_SECRET_KEY to backend/.env for local dev or set STRIPE_SECRET_KEY in your deployment environment variables.' });
     }
 
     // Retrieve the session from Stripe
@@ -160,7 +162,8 @@ exports.handleWebhook = async (req, res) => {
   let event;
 
   if (!stripe) {
-    return res.status(500).json({ error: 'Stripe is not configured' });
+    console.error('[GymBase_API] Stripe webhook called but STRIPE_SECRET_KEY is missing');
+    return res.status(500).json({ error: 'Stripe is not configured on the server. Webhook cannot be processed until STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET are set.' });
   }
 
   try {
