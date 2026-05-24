@@ -94,6 +94,8 @@ console.log('[GymBase_API] Runtime config:', {
   hasJwtSecret: !!process.env.JWT_SECRET,
   hasFrontendUrl: !!process.env.FRONTEND_URL,
   corsOrigins: allowedOrigins,
+  hasStripe: !!process.env.STRIPE_SECRET_KEY,
+  stripeKeySource: process.env.STRIPE_SECRET_KEY ? 'STRIPE_SECRET_KEY' : 'missing',
 });
 
 app.use(cors(corsOptions));
@@ -124,6 +126,8 @@ app.get('/api/diagnostics', (req, res) => {
     hasFrontendUrl: !!process.env.FRONTEND_URL,
     corsOrigins: allowedOrigins,
     dbReady: typeof isDbReady === 'function' ? isDbReady() : false,
+    hasStripe: !!process.env.STRIPE_SECRET_KEY,
+    stripeKeySource: process.env.STRIPE_SECRET_KEY ? 'STRIPE_SECRET_KEY' : 'missing',
   });
 });
 
